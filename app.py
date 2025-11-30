@@ -11,7 +11,8 @@ app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    all_reservations = reservations.get_reservations()
+    return render_template("index.html", reservations=all_reservations)
 
 @app.route("/register")
 def register():
@@ -72,6 +73,11 @@ def create_reservation():
     description = request.form["description"]
     user_id = session["user_id"]
 
-    reservations.add.reservation(title, time, description, user_id)
+    reservations.add_reservation(title, time, description, user_id)
 
     return redirect("/")
+
+@app.route("/reservation/<int:reservation_id>")
+def show_reservation(reservation_id):
+    reservation = reservations.get_reservation(reservation_id)
+    return render_template("show_reservation.html", reservation=reservation)
