@@ -4,6 +4,7 @@ from flask import redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import config
 import db
+import reservations
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -71,7 +72,6 @@ def create_reservation():
     description = request.form["description"]
     user_id = session["user_id"]
 
-    sql = "INSERT INTO reservations (title, time, description, user_id) VALUES (?,?,?,?)"
-    db.execute(sql, [title, time, description, user_id])
+    reservations.add.reservation(title, time, description, user_id)
 
     return redirect("/")
