@@ -11,3 +11,9 @@ CREATE TABLE reservations (
     description TEXT,
     user_id INTEGER REFERENCES users
 );
+
+CREATE TABLE registrations (
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER REFERENCES users,
+    reservation_id INTEGER REFERENCES reservations
+);

@@ -5,6 +5,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import config
 import db
 import reservations
+import registrations
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -80,4 +81,15 @@ def create_reservation():
 @app.route("/reservation/<int:reservation_id>")
 def show_reservation(reservation_id):
     reservation = reservations.get_reservation(reservation_id)
-    return render_template("show_reservation.html", reservation=reservation)
+    event_registrations = registrations.get_registrations()
+    username = session["username"]
+
+    return render_template("show_reservation.html", reservation=reservation, username=username, registrations=event_registrations)
+
+@app.route("/register_event", methods=["POST"])
+def register_event():
+    user_id = request.form["user_id"]
+    reservation_id = request.form["reservation_id"]
+    registrations.add_registration(user_id, reservation_id)
+
+    return redirect("/")

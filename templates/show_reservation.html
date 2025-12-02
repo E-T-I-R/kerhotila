@@ -16,6 +16,17 @@
   <p>
     {{ reservation.description }}
   </p>
+  <form action="/register_event" method="post">
+    <p>Käyttäjänimesi: {{ username }}</p>
+    <input value="{{ reservation.user_id }}" type="hidden" name="user_id" />
+    <input value="{{ reservation.id }}" type="hidden" name="reservation_id" />
+    <input type="submit" value="Ilmoittaudu" />
+  </form>
+  <ul>
+    {% for registration in registrations %}
+    <li><a>{{ registration.username }}</a></li>
+    {% endfor %}
+  </ul>
   <p>
     <a href="/">Takaisin</a>
   </p>
