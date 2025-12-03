@@ -16,15 +16,24 @@
   <p>
     {{ reservation.description }}
   </p>
+  {% if session.username and session.username != reservation.username %}
   <form action="/register_event" method="post">
-    <p>Käyttäjänimesi: {{ username }}</p>
-    <input value="{{ reservation.user_id }}" type="hidden" name="user_id" />
+    <p>Käyttäjänimesi: {{ session.username }}</p>
+    <input value="{{ session.user_id }}" type="hidden" name="user_id" />
     <input value="{{ reservation.id }}" type="hidden" name="reservation_id" />
     <input type="submit" value="Ilmoittaudu" />
   </form>
+  {% endif %}
   <ul>
     {% for registration in registrations %}
+    {% if registration.reservation_id == reservation.id %}
     <li><a>{{ registration.username }}</a></li>
+    {% if session.username == registration.username %}
+    <p>
+      <a href="/remove/{{ registration.id }}">Poista ilmoittautuminen</a>
+    </p>
+    {% endif %}
+    {% endif %}
     {% endfor %}
   </ul>
   <p>

@@ -74,17 +74,16 @@ def create_reservation():
     description = request.form["description"]
     user_id = session["user_id"]
 
-    reservations.add_reservation(title, time, description, user_id)
+    reservation_id = reservations.add_reservation(title, time, description, user_id)
 
-    return redirect("/")
+    return redirect("/reservation/" + str(reservation_id))
 
 @app.route("/reservation/<int:reservation_id>")
 def show_reservation(reservation_id):
     reservation = reservations.get_reservation(reservation_id)
     event_registrations = registrations.get_registrations()
-    username = session["username"]
 
-    return render_template("show_reservation.html", reservation=reservation, username=username, registrations=event_registrations)
+    return render_template("show_reservation.html", reservation=reservation, registrations=event_registrations)
 
 @app.route("/register_event", methods=["POST"])
 def register_event():
@@ -92,4 +91,11 @@ def register_event():
     reservation_id = request.form["reservation_id"]
     registrations.add_registration(user_id, reservation_id)
 
-    return redirect("/")
+    return redirect("/reservation/" + str(reservation_id))
+
+@app.route("/remove/<int:registration_id>")
+def remove_registration(registration_id):
+    registration = registrations.get_reservation_id(registration_id)
+    registrations.remove_registration(registration_id)
+
+    return redirect("/reservation/" + str(registration))

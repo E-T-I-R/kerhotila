@@ -3,6 +3,8 @@ import db
 def add_reservation(title, time, description, user_id):
     sql = "INSERT INTO reservations (title, time, description, user_id) VALUES (?,?,?,?)"
     db.execute(sql, [title, time, description, user_id])
+    reservation_id = db.last_insert_id()
+    return reservation_id
 
 def get_reservations():
     sql = "SELECT id, title, time FROM reservations ORDER BY id DESC"
