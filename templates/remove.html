@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Ajanvarauksen poistaminen</title>
+</head>
+
+<body>
+  <h1>Ajanvarauksen poistaminen</h1>
+  <form action="/remove/{{ reservation.id }}" method="post">
+    <p>
+        Haluatko varmasti poistaa ajanvarauksen?
+    </p>
+    <input type="submit" name="continue" value="Jatka" />
+    <input type="submit" name="cancel" value="Peruuta" />
+  </form>
+</body>
+
+</html>

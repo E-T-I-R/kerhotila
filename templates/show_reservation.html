@@ -16,6 +16,13 @@
   <p>
     {{ reservation.description }}
   </p>
+  {% if session.username == reservation.username %}
+  <p>
+    <a href="/edit/{{ reservation.id }}">Muokkaa varausta</a>
+    <a href="/remove/{{ reservation.id }}">Poista varaus</a>
+  </p>
+  {% endif %}
+
   {% if session.username and session.username != reservation.username %}
   <form action="/register_event" method="post">
     <p>Käyttäjänimesi: {{ session.username }}</p>

@@ -85,6 +85,36 @@ def show_reservation(reservation_id):
 
     return render_template("show_reservation.html", reservation=reservation, registrations=event_registrations)
 
+@app.route("/edit/<int:reservation_id>", methods=["GET", "POST"])
+def edit_reservation(reservation_id):
+    reservation = reservations.get_reservation(reservation_id)
+
+    if request.method == "GET":
+        return render_template("edit.html", reservation=reservation)
+
+    if request.method == "POST":
+        title = request.form["title"]
+        time = request.form["time"]
+        description = request.form["description"]
+        reservations.update_reservation(reservation_id, title, time, description)
+
+        return redirect("/reservation/" + str(reservation_id))
+
+@app.route("/remove/<int:reservation_id>", methods=["GET", "POST"])
+def remove_reservation(reservation_id):
+    reservation = reservations.get_reservation(reservation_id)
+
+    if request.method == "GET":
+        return render_template("remove.html", reservation=reservation)
+
+    if request.method == "POST":
+        if "continue" in request.form:
+            reservations.remove_registrations(reservation_id)
+            reservations.remove_reservation(reservation_id)
+            return redirect("/")
+
+        return redirect("/reservation/" + str(reservation_id))
+
 @app.route("/register_event", methods=["POST"])
 def register_event():
     user_id = request.form["user_id"]

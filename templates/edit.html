@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Ajanvarauksen muokkaus</title>
+</head>
+
+<body>
+  <h1>Ajanvarauksen muokkaus</h1>
+  <form action="/edit/{{ reservation.id }}" method="post">
+    <p>
+      Otsikko: <br />
+      <input type="text" name="title" value="{{ reservation.title }}" />
+    </p>
+    <p>
+      Ajankohta: <br />
+      <input type="datetime-local" name="time" min="2025-11-01T00:00:00" max="2030-01-01T00:00:00" value="{{ reservation.time }}" />
+    </p>
+    <p>
+      Tapahtuman kuvaus: <br />
+      <textarea name="description" rows="7" cols="50">{{ reservation.description }}</textarea>
+    </p>
+    <input type="submit" value="Muokkaa varausta" />
+  </form>
+  <p>
+    <a href="/reservation/{{ reservation.id }}">Takaisin</a>
+  </p>
+</body>
+
+</html>
