@@ -7,6 +7,7 @@
 
 <body>
   <h1>Ajanvaraus</h1>
+  {% if session.username %}
   <form action="/create_reservation" method="post">
     <p>
       Otsikko: <br />
@@ -22,6 +23,11 @@
     </p>
     <input type="submit" value="Varaa aika" />
   </form>
+  {% else %}
+  <p>
+    Kirjaudu sisään!
+  </p>
+  {% endif %}
   <p>
     <a href="/">Takaisin</a>
   </p>

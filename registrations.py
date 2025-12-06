@@ -12,11 +12,12 @@ def get_registrations():
     return db.query(sql)
 
 def get_reservation_id(registration_id):
-    sql = """SELECT res.id
+    sql = """SELECT res.id, reg.user_id
              FROM registrations reg, reservations res
              WHERE reg.reservation_id = res.id AND reg.id = ?
              ORDER BY reg.id"""
-    return db.query(sql, [registration_id])[0][0]
+    result = db.query(sql, [registration_id])
+    return result[0] if result else None
 
 def remove_registration(registration_id):
     sql = "DELETE FROM registrations WHERE id = ?"

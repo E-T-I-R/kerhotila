@@ -14,7 +14,8 @@ def get_reservation(reservation_id):
     sql = """SELECT r.id, r.title, u.username, r.time, r.description, r.user_id
              FROM reservations r, users u
              WHERE r.user_id = u.id AND r.id = ?"""
-    return db.query(sql, [reservation_id])[0]
+    result = db.query(sql, [reservation_id])
+    return result[0] if result else None
 
 def update_reservation(reservation_id, title, time, description):
     sql = "UPDATE reservations SET title = ?, time = ?, description = ? WHERE id = ?"

@@ -81,6 +81,8 @@ def create_reservation():
 @app.route("/reservation/<int:reservation_id>")
 def show_reservation(reservation_id):
     reservation = reservations.get_reservation(reservation_id)
+    if not reservation:
+        abort(404)
     event_registrations = registrations.get_registrations()
 
     return render_template("show_reservation.html", reservation=reservation, registrations=event_registrations)
@@ -88,6 +90,8 @@ def show_reservation(reservation_id):
 @app.route("/edit/<int:reservation_id>", methods=["GET", "POST"])
 def edit_reservation(reservation_id):
     reservation = reservations.get_reservation(reservation_id)
+    if not reservation:
+        abort(404)
     if reservation["user_id"] != session["user_id"]:
         abort(403)
 
@@ -102,14 +106,16 @@ def edit_reservation(reservation_id):
 
         return redirect("/reservation/" + str(reservation_id))
 
-@app.route("/remove/<int:reservation_id>", methods=["GET", "POST"])
+@app.route("/remove_reservation/<int:reservation_id>", methods=["GET", "POST"])
 def remove_reservation(reservation_id):
     reservation = reservations.get_reservation(reservation_id)
-    if reservation["user_id"] != session["user_id"]:
+    if not reservation:
+        abort(404)
+    elif reservation["user_id"] != session["user_id"]:
         abort(403)
 
     if request.method == "GET":
-        return render_template("remove.html", reservation=reservation)
+        return render_template("remove_reservation.html", reservation=reservation)
 
     if request.method == "POST":
         if "continue" in request.form:
@@ -121,15 +127,22 @@ def remove_reservation(reservation_id):
 
 @app.route("/register_event", methods=["POST"])
 def register_event():
-    user_id = request.form["user_id"]
+    user_id = session["user_id"]
     reservation_id = request.form["reservation_id"]
-    registrations.add_registration(user_id, reservation_id)
+    try:
+        registrations.add_registration(user_id, reservation_id)
+    except sqlite3.IntegrityError:
+        abort(403)
 
     return redirect("/reservation/" + str(reservation_id))
 
-@app.route("/remove/<int:registration_id>")
+@app.route("/remove_registration/<int:registration_id>")
 def remove_registration(registration_id):
     registration = registrations.get_reservation_id(registration_id)
+    if not registration:
+        abort(404)
+    if registration["user_id"] != session["user_id"]:
+        abort(403)
     registrations.remove_registration(registration_id)
 
-    return redirect("/reservation/" + str(registration))
+    return redirect("/reservation/" + str(registration["id"]))
