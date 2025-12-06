@@ -1,6 +1,6 @@
 import sqlite3
 from flask import Flask
-from flask import redirect, render_template, request, session
+from flask import redirect, render_template, request, session, abort
 from werkzeug.security import check_password_hash, generate_password_hash
 import config
 import db
@@ -32,9 +32,9 @@ def create():
         sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
         db.execute(sql, [username, password_hash])
     except sqlite3.IntegrityError:
-        return "VIRHE: tunnus on jo varattu"
+        return "<p>VIRHE: tunnus on jo varattu</p> <p><a href=""/"">Takaisin</a></p>"
 
-    return "Tunnus luotu"
+    return "<p>Tunnus luotu</p> <p><a href=""/"">Takaisin</a></p>"
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -88,6 +88,8 @@ def show_reservation(reservation_id):
 @app.route("/edit/<int:reservation_id>", methods=["GET", "POST"])
 def edit_reservation(reservation_id):
     reservation = reservations.get_reservation(reservation_id)
+    if reservation["user_id"] != session["user_id"]:
+        abort(403)
 
     if request.method == "GET":
         return render_template("edit.html", reservation=reservation)
@@ -103,6 +105,8 @@ def edit_reservation(reservation_id):
 @app.route("/remove/<int:reservation_id>", methods=["GET", "POST"])
 def remove_reservation(reservation_id):
     reservation = reservations.get_reservation(reservation_id)
+    if reservation["user_id"] != session["user_id"]:
+        abort(403)
 
     if request.method == "GET":
         return render_template("remove.html", reservation=reservation)
