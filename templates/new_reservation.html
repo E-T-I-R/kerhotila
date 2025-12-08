@@ -7,27 +7,21 @@
 
 <body>
   <h1>Ajanvaraus</h1>
-  {% if session.username %}
   <form action="/create_reservation" method="post">
     <p>
       Otsikko: <br />
-      <input type="text" name="title" />
+      <input type="text" name="title" maxlength="50" required />
     </p>
     <p>
       Ajankohta: <br />
-      <input type="datetime-local" name="time" min="2025-11-01T00:00:00" max="2030-01-01T00:00:00" />
+      <input type="datetime-local" name="time" min="2025-11-01T00:00:00" max="2030-01-01T00:00:00" required />
     </p>
     <p>
       Tapahtuman kuvaus: <br />
-      <textarea name="description" rows="7" cols="50"></textarea>
+      <textarea name="description" rows="7" cols="50" maxlength="5000"></textarea>
     </p>
     <input type="submit" value="Varaa aika" />
   </form>
-  {% else %}
-  <p>
-    Kirjaudu sisään!
-  </p>
-  {% endif %}
   <p>
     <a href="/">Takaisin</a>
   </p>
