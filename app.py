@@ -174,3 +174,9 @@ def remove_registration(registration_id):
     registrations.remove_registration(registration_id)
 
     return redirect("/reservation/" + str(registration["id"]))
+
+@app.route("/search")
+def search():
+    query = request.args.get("query")
+    results = reservations.search(query) if query else []
+    return render_template("search.html", query=query, results=results)

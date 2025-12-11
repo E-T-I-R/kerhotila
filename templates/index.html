@@ -7,11 +7,13 @@
 
 <body>
   <h1>Kerhotilan varauspalvelu</h1>
+
   {% if session.username %}
   <p>
     Olet kirjautunut nimellä {{ session.username }}
   </p>
   {% endif %}
+
   <p>
     {% if not session.username %}
     <a href="/login">Kirjaudu sisään</a>
@@ -20,13 +22,18 @@
     <a href="/logout">Kirjaudu ulos</a>
     {% endif %}
   </p>
+
   {% if session.username %}
   <p>
     <a href="/new_reservation">Uusi ajanvaraus</a>
+    {% else %}
+    <a href="/search">Hae ajanvaraus</a>
   </p>
   {% endif %}
+
   {% if reservations %}
   <h2>Varaukset</h2>
+
   <ul>
     {% for reservation in reservations %}
     <li><a href="/reservation/{{ reservation.id }}">{{ reservation.title }}</a></li>

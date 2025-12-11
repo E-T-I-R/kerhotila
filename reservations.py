@@ -28,3 +28,14 @@ def remove_reservation(reservation_id):
 def remove_registrations(reservation_id):
     sql = "DELETE FROM registrations WHERE reservation_id = ?"
     db.execute(sql, [reservation_id])
+
+def search(query):
+    sql = """SELECT r.id reservation_id,
+                    r.title reservation_title,
+                    r.time reservation_time,
+                    u.username
+             FROM reservations r, users u
+             WHERE r.user_id = u.id AND
+                   r.description LIKE ?
+             ORDER BY r.title DESC"""
+    return db.query(sql, ["%" + query + "%"])
