@@ -7,7 +7,13 @@ def add_reservation(title, time, description, user_id):
     return reservation_id
 
 def get_reservations():
-    sql = "SELECT id, title, time FROM reservations ORDER BY id DESC"
+    sql = """SELECT r.id id,
+                    r.title,
+                    r.time,
+                    username
+             FROM reservations r, users
+             WHERE r.user_id = users.id
+             ORDER BY r.time"""
     return db.query(sql)
 
 def get_reservation(reservation_id):

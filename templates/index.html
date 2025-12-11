@@ -14,14 +14,14 @@
   </p>
   {% endif %}
 
+  {% if not session.username %}
   <p>
-    {% if not session.username %}
     <a href="/login">Kirjaudu sisään</a>
     <a href="/register">Luo tunnus</a>
     {% else %}
     <a href="/logout">Kirjaudu ulos</a>
-    {% endif %}
   </p>
+  {% endif %}
 
   {% if session.username %}
   <p>
@@ -35,11 +35,17 @@
   <h2>Varaukset</h2>
 
   <ul>
-    {% for reservation in reservations %}
-    <li><a href="/reservation/{{ reservation.id }}">{{ reservation.title }}</a></li>
-    {% endfor %}
-  {% endif %}
+  {% for reservation in reservations %}
+    <li>
+      <a href="/reservation/{{ reservation.id }}">
+        {{ reservation.title }}
+      </a>
+      <br />
+      {{ reservation.username }} ({{ reservation.time }})
+    </li>
+  {% endfor %}
   </ul>
+  {% endif %}
 </body>
 
 </html>
