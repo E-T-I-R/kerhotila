@@ -10,6 +10,7 @@ def get_reservations():
     sql = """SELECT r.id id,
                     r.title,
                     r.time,
+                    r.user_id,
                     username
              FROM reservations r, users
              WHERE r.user_id = users.id

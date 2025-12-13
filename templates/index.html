@@ -20,16 +20,16 @@
     <a href="/register">Luo tunnus</a>
     {% else %}
     <a href="/logout">Kirjaudu ulos</a>
+    <a href="/user/{{ session.user_id }}">Käyttäjäsivu</a>
   </p>
   {% endif %}
 
-  {% if session.username %}
   <p>
+    {% if session.username %}
     <a href="/new_reservation">Uusi ajanvaraus</a>
-    {% else %}
+    {% endif %}
     <a href="/search">Hae ajanvaraus</a>
   </p>
-  {% endif %}
 
   {% if reservations %}
   <h2>Varaukset</h2>
@@ -41,7 +41,8 @@
         {{ reservation.title }}
       </a>
       <br />
-      {{ reservation.username }} ({{ reservation.time }})
+      <a href="/user/{{ reservation.user_id }}">{{ reservation.username }}</a>
+      ({{ reservation.time }})
     </li>
   {% endfor %}
   </ul>

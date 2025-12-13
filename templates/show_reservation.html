@@ -8,7 +8,8 @@
 <body>
   <h1>{{ reservation.title }}</h1>
   <p>
-    Järjestäjä: {{ reservation.username }}
+    Järjestäjä:
+    <a href="/user/{{ reservation.user_id }}">{{ reservation.username }}</a>
   </p>
   <p>
     Ajankohta: {{ reservation.time }}
@@ -25,7 +26,9 @@
 
   {% if session.username and session.username != reservation.username %}
   <form action="/register_event" method="post">
-    <p>Käyttäjänimesi: {{ session.username }}</p>
+    <p>Käyttäjänimesi:
+      <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
+    </p>
     <input value="{{ reservation.id }}" type="hidden" name="reservation_id" />
     <input type="submit" value="Ilmoittaudu" />
   </form>

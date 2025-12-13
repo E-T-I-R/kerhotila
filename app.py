@@ -6,6 +6,7 @@ import config
 import db
 import reservations
 import registrations
+import users
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -180,3 +181,12 @@ def search():
     query = request.args.get("query")
     results = reservations.search(query) if query else []
     return render_template("search.html", query=query, results=results)
+
+@app.route("/user/<int:user_id>")
+def show_user(user_id):
+    user = users.get_user(user_id)
+    if not user:
+        abort(404)
+    reservations = users.get_reservations(user_id)
+    registrations = users.get_registrations(user_id)
+    return render_template("user.html", user=user, reservations=reservations, registrations=registrations)

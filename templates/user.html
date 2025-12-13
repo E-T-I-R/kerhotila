@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Käyttäjäsivu</title>
+</head>
+
+<body>
+  <h1>Käyttäjä {{ user.username }}</h1>
+
+  <p>
+    Käyttäjä on tehnyt {{ reservations | count }} ajanvarausta
+  </p>
+
+  <ul>
+  {% for reservation in reservations %}
+    <li>
+      <a href="/reservation/{{ reservation.id }}">
+        {{ reservation.title }}
+      </a>
+      <br />
+      {{ reservation.time }}
+    </li>  
+  {% endfor %}
+  </ul>
+
+  <p>
+    Käyttäjä on ilmoittautunut {{ registrations | count }} ajanvaraukseen
+  </p>
+
+  <ul>
+  {% for registration in registrations %}
+    <li>
+      <a href="/reservation/{{ registration.reservation_id }}">
+        {{ registration.reservation_title }}
+      </a>
+      <br />
+      <a href="/user/{{ registration.reservation_user_id}}">{{ registration.reservation_username }}</a>
+      ({{ registration.reservation_time }})
+    </li>  
+  {% endfor %}
+  </ul>
+
+  <p>
+    <a href="/">Takaisin</a>
+  </p>
+</body>
+
+</html>
