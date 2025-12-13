@@ -6,7 +6,7 @@ def add_reservation(title, time, description, user_id):
     reservation_id = db.last_insert_id()
     return reservation_id
 
-def get_reservations():
+def get_reservations(page, page_size):
     sql = """SELECT r.id id,
                     r.title,
                     r.time,
@@ -14,8 +14,11 @@ def get_reservations():
                     username
              FROM reservations r, users
              WHERE r.user_id = users.id
-             ORDER BY r.time"""
-    return db.query(sql)
+             ORDER BY r.time
+             LIMIT ? OFFSET ?"""
+    limit = page_size
+    offset = page_size * (page - 1)
+    return db.query(sql, [limit, offset])
 
 def get_reservation(reservation_id):
     sql = """SELECT r.id, r.title, u.username, r.time, r.description, r.user_id
@@ -46,3 +49,7 @@ def search(query):
                    r.description LIKE ?
              ORDER BY r.title DESC"""
     return db.query(sql, ["%" + query + "%"])
+
+def reservation_count():
+    sql = "SELECT count(id) FROM reservations"
+    return db.query(sql)[0][0]

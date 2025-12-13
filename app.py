@@ -1,7 +1,7 @@
 import sqlite3
-from flask import Flask
-from flask import redirect, render_template, request, session, abort, make_response
+from flask import Flask, redirect, render_template, request, session, abort, make_response, g
 from werkzeug.security import check_password_hash, generate_password_hash
+import math
 import config
 import db
 import reservations
@@ -12,9 +12,20 @@ app = Flask(__name__)
 app.secret_key = config.secret_key
 
 @app.route("/")
-def index():
-    all_reservations = reservations.get_reservations()
-    return render_template("index.html", reservations=all_reservations)
+@app.route("/<int:page>")
+def index(page=1):
+    page_size = 10
+    reservation_count = reservations.reservation_count()
+    page_count = math.ceil(reservation_count / page_size)
+    page_count = max(page_count, 1)
+
+    if page < 1:
+        return redirect("/1")
+    if page > page_count:
+        return redirect("/" + str(page_count))
+
+    all_reservations = reservations.get_reservations(page, page_size)
+    return render_template("index.html", page=page, page_count=page_count, reservations=all_reservations)
 
 @app.route("/register")
 def register():
