@@ -8,6 +8,11 @@
 <body>
   <h1>Käyttäjä {{ user.username }}</h1>
 
+  {% if user.has_image %}
+  <img src="/image/{{ user.id }}" />
+  {% endif %}
+  <a href="/add_image">Lisää profiilikuva</a>
+
   <p>
     Käyttäjä on tehnyt {{ reservations | count }} ajanvarausta
   </p>
