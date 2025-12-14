@@ -45,9 +45,18 @@
     {% endif %}
     {% endif %}
     {% endfor %}
+
+    {% if not session.username %}
+    <p>
+      Jos haluat ilmoittautua,
+      <a href="/login">kirjaudu sisään</a>
+      ensin
+    </p>
+    {% endif %}
+
   </ul>
   <p>
-    <a href="/">Takaisin</a>
+    <a href="/">Etusivulle</a>
   </p>
 </body>
 

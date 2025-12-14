@@ -1,6 +1,5 @@
 import sqlite3
 from flask import Flask, redirect, render_template, request, session, abort, make_response, flash
-from werkzeug.security import check_password_hash
 import math
 import secrets
 import config
@@ -56,27 +55,24 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
-        return render_template("login.html")
+        return render_template("login.html", next_page=request.referrer)
 
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+        next_page = request.form["next_page"]
         if not username or not password or len(username) > 20 or len(password) > 100:
             abort(403)
 
-        sql = "SELECT id, password_hash FROM users WHERE username = ?"
-        result = db.query(sql, [username])[0]
-        user_id = result["id"]
-        password_hash = result["password_hash"]
-
-        if check_password_hash(password_hash, password):
+        user_id = users.check_login(username, password)
+        if user_id:
             session["user_id"] = user_id
             session["csrf_token"] = secrets.token_hex(16)
             session["username"] = username
-            return redirect("/")
+            return redirect(next_page)
         else:
             flash("VIRHE: Väärä tunnus tai salasana")
-            return redirect("/login")
+            return render_template("login.html", next_page=next_page)
 
 @app.route("/logout")
 def logout():
@@ -209,7 +205,6 @@ def search():
 
 @app.route("/user/<int:user_id>")
 def show_user(user_id):
-    require_login()
 
     user = users.get_user(user_id)
     if not user:

@@ -1,5 +1,5 @@
 import db
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 
 def create_user(username, password):
@@ -10,6 +10,13 @@ def create_user(username, password):
     except sqlite3.IntegrityError:
         return False
     return True
+
+def check_login(username, password):
+    sql = "SELECT id, password_hash FROM users WHERE username = ?"
+    result = db.query(sql, [username])[0]
+    user_id = result["id"]
+    password_hash = result["password_hash"]
+    return user_id if check_password_hash(password_hash, password) else None
 
 def get_user(user_id):
     sql = """SELECT id, username, image IS NOT NULL has_image
