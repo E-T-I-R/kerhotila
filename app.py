@@ -139,8 +139,15 @@ def edit_reservation(reservation_id):
     if reservation["user_id"] != session["user_id"]:
         abort(403)
 
+    all_classes = reservations.get_all_classes()
+    classes = {}
+    for my_class in all_classes:
+        classes[my_class] = ""
+    for entry in reservations.get_classes(reservation_id):
+        classes[entry["title"]] = entry["value"]
+
     if request.method == "GET":
-        return render_template("edit.html", reservation=reservation)
+        return render_template("edit.html", reservation=reservation, classes=classes, all_classes=all_classes)
 
     if request.method == "POST":
         check_csrf()
@@ -151,7 +158,13 @@ def edit_reservation(reservation_id):
         if not title or len(title) > 50 or len(description) > 5000:
             abort(403)
 
-        reservations.update_reservation(reservation_id, title, time, description)
+        classes = []
+        for entry in request.form.getlist("classes"):
+            if entry:
+                parts = entry.split(":")
+                classes.append((parts[0], parts[1]))
+
+        reservations.update_reservation(reservation_id, title, time, description, classes)
 
         return redirect("/reservation/" + str(reservation_id))
 
@@ -173,6 +186,7 @@ def remove_reservation(reservation_id):
 
         if "continue" in request.form:
             reservations.remove_registrations(reservation_id)
+            reservations.remove_classes(reservation_id)
             reservations.remove_reservation(reservation_id)
             return redirect("/")
 

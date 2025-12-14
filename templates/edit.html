@@ -21,6 +21,23 @@
       <textarea name="description" rows="7" cols="50" maxlength="5000">{{ reservation.description }}</textarea>
     </p>
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+
+    {% for class in all_classes %}
+    <p>
+      {{ class }} <br />
+      <select name="classes" >
+        <option value="">(Valitse)</option>
+      {% for option in all_classes[class] %}
+        {% if classes[class] == option %}
+        <option value="{{ class }}:{{ option }}" selected>{{ option }}</option>
+        {% else %}
+        <option value="{{ class }}:{{ option }}">{{ option }}</option>
+        {% endif %}
+      {% endfor %}
+      </select>
+    </p>
+    {% endfor %}
+
     <input type="submit" value="Muokkaa varausta" />
   </form>
   <p>

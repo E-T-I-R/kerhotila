@@ -51,9 +51,16 @@ def get_reservation(reservation_id):
     result = db.query(sql, [reservation_id])
     return result[0] if result else None
 
-def update_reservation(reservation_id, title, time, description):
+def update_reservation(reservation_id, title, time, description, classes):
     sql = "UPDATE reservations SET title = ?, time = ?, description = ? WHERE id = ?"
     db.execute(sql, [title, time, description, reservation_id])
+
+    remove_classes(reservation_id)
+
+    sql = """INSERT INTO reservation_classes (reservation_id, title, value)
+             VALUES (?, ?, ?)"""
+    for title, value in classes:
+        db.execute(sql, [reservation_id, title, value])
 
 def remove_reservation(reservation_id):
     sql = "DELETE FROM reservations WHERE id = ?"
@@ -61,6 +68,10 @@ def remove_reservation(reservation_id):
 
 def remove_registrations(reservation_id):
     sql = "DELETE FROM registrations WHERE reservation_id = ?"
+    db.execute(sql, [reservation_id])
+
+def remove_classes(reservation_id):
+    sql = "DELETE FROM reservation_classes WHERE reservation_id = ?"
     db.execute(sql, [reservation_id])
 
 def search(query):
