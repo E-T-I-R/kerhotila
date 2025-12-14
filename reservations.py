@@ -1,10 +1,34 @@
 import db
 
-def add_reservation(title, time, description, user_id):
-    sql = "INSERT INTO reservations (title, time, description, user_id) VALUES (?,?,?,?)"
+def get_all_classes():
+    sql = "SELECT title, value FROM classes ORDER BY id"
+    result = db.query(sql)
+
+    classes = {}
+    for title, value in result:
+        classes[title] = []
+    for title, value in result:
+        classes[title].append(value)
+
+    return classes
+
+def add_reservation(title, time, description, user_id, classes):
+    sql = """INSERT INTO reservations (title, time, description, user_id)
+             VALUES (?, ?, ?, ?)"""
     db.execute(sql, [title, time, description, user_id])
+
     reservation_id = db.last_insert_id()
+
+    sql = """INSERT INTO reservation_classes (reservation_id, title, value)
+             VALUES (?, ?, ?)"""
+    for title, value in classes:
+        db.execute(sql, [reservation_id, title, value])
+
     return reservation_id
+
+def get_classes(reservation_id):
+    sql = "SELECT title, value FROM reservation_classes WHERE reservation_id = ?"
+    return db.query(sql, [reservation_id])
 
 def get_reservations(page, page_size):
     sql = """SELECT r.id id,

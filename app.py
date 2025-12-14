@@ -93,8 +93,9 @@ def check_csrf():
 @app.route("/new_reservation")
 def new_reservation():
     require_login()
+    classes = reservations.get_all_classes()
 
-    return render_template("new_reservation.html")
+    return render_template("new_reservation.html", classes=classes)
 
 @app.route("/create_reservation", methods=["POST"])
 def create_reservation():
@@ -108,7 +109,13 @@ def create_reservation():
     if not title or len(title) > 50 or len(description) > 5000:
         abort(403)
 
-    reservation_id = reservations.add_reservation(title, time, description, user_id)
+    classes = []
+    for entry in request.form.getlist("classes"):
+        if entry:
+            parts = entry.split(":")
+            classes.append((parts[0], parts[1]))
+
+    reservation_id = reservations.add_reservation(title, time, description, user_id, classes)
 
     return redirect("/reservation/" + str(reservation_id))
 
@@ -117,9 +124,10 @@ def show_reservation(reservation_id):
     reservation = reservations.get_reservation(reservation_id)
     if not reservation:
         abort(404)
+    classes = reservations.get_classes(reservation_id)
     event_registrations = registrations.get_registrations()
 
-    return render_template("show_reservation.html", reservation=reservation, registrations=event_registrations)
+    return render_template("show_reservation.html", reservation=reservation, registrations=event_registrations, classes=classes)
 
 @app.route("/edit/<int:reservation_id>", methods=["GET", "POST"])
 def edit_reservation(reservation_id):

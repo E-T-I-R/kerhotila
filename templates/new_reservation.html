@@ -21,6 +21,19 @@
       <textarea name="description" rows="7" cols="50" maxlength="5000"></textarea>
     </p>
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+
+    {% for class in classes %}
+    <p>
+      {{ class }} <br />
+      <select name="classes" >
+        <option value="">(Valitse)</option>
+      {% for option in classes[class] %}
+        <option value="{{ class }}:{{ option }}">{{ option }}</option>
+      {% endfor %}
+      </select>
+    </p>
+    {% endfor %}
+
     <input type="submit" value="Varaa aika" />
   </form>
   <p>

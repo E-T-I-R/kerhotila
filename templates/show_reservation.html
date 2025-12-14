@@ -17,6 +17,15 @@
   <p>
     {{ reservation.description }}
   </p>
+  <p>
+    Luokat:
+    <ul>
+       {% for class in classes %}
+       <li>{{ class.title }}: {{ class.value }}</li>
+       {% endfor %}
+    </ul>
+  </p>
+
   {% if session.username == reservation.username %}
   <p>
     <a href="/edit/{{ reservation.id }}">Muokkaa varausta</a>
