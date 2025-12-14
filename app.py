@@ -2,6 +2,7 @@ import sqlite3
 from flask import Flask, redirect, render_template, request, session, abort, make_response, g
 from werkzeug.security import check_password_hash, generate_password_hash
 import math
+import secrets
 import config
 import db
 import reservations
@@ -69,6 +70,7 @@ def login():
 
         if check_password_hash(password_hash, password):
             session["user_id"] = user_id
+            session["csrf_token"] = secrets.token_hex(16)
             session["username"] = username
             return redirect("/")
         else:
@@ -86,6 +88,10 @@ def require_login():
     if "user_id" not in session:
         abort(403)
 
+def check_csrf():
+    if request.form["csrf_token"] != session["csrf_token"]:
+        abort(403)
+
 @app.route("/new_reservation")
 def new_reservation():
     require_login()
@@ -95,6 +101,7 @@ def new_reservation():
 @app.route("/create_reservation", methods=["POST"])
 def create_reservation():
     require_login()
+    check_csrf()
 
     title = request.form["title"]
     time = request.form["time"]
@@ -130,6 +137,8 @@ def edit_reservation(reservation_id):
         return render_template("edit.html", reservation=reservation)
 
     if request.method == "POST":
+        check_csrf()
+
         title = request.form["title"]
         time = request.form["time"]
         description = request.form["description"]
@@ -154,6 +163,8 @@ def remove_reservation(reservation_id):
         return render_template("remove_reservation.html", reservation=reservation)
 
     if request.method == "POST":
+        check_csrf()
+
         if "continue" in request.form:
             reservations.remove_registrations(reservation_id)
             reservations.remove_reservation(reservation_id)
@@ -163,6 +174,7 @@ def remove_reservation(reservation_id):
 
 @app.route("/register_event", methods=["POST"])
 def register_event():
+    check_csrf()
     require_login()
 
     user_id = session["user_id"]
@@ -195,6 +207,8 @@ def search():
 
 @app.route("/user/<int:user_id>")
 def show_user(user_id):
+    require_login()
+
     user = users.get_user(user_id)
     if not user:
         abort(404)
@@ -210,6 +224,8 @@ def add_image():
         return render_template("add_image.html")
 
     if request.method == "POST":
+        check_csrf()
+
         file = request.files["image"]
         if not file.filename.endswith(".jpg"):
             return "VIRHE: väärä tidostomuoto"

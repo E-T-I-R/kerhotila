@@ -20,6 +20,7 @@
       Tapahtuman kuvaus: <br />
       <textarea name="description" rows="7" cols="50" maxlength="5000"></textarea>
     </p>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <input type="submit" value="Varaa aika" />
   </form>
   <p>

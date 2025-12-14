@@ -29,7 +29,8 @@
     <p>Käyttäjänimesi:
       <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
     </p>
-    <input value="{{ reservation.id }}" type="hidden" name="reservation_id" />
+    <input type="hidden" name="reservation_id" value="{{ reservation.id }}" />
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <input type="submit" value="Ilmoittaudu" />
   </form>
   {% endif %}
