@@ -8,6 +8,12 @@
 <body>
   <h1>Käyttäjä {{ user.username }}</h1>
 
+  {% for message in get_flashed_messages() %}
+  <p>
+    <b>{{ message }}</b>
+  </p>
+  {% endfor %}
+
   {% if user.has_image %}
   <img src="/image/{{ user.id }}" />
   {% endif %}

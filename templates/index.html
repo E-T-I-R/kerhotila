@@ -14,6 +14,12 @@
   </p>
   {% endif %}
 
+  {% for message in get_flashed_messages() %}
+  <p>
+    <b>{{ message }}</b>
+  </p>
+  {% endfor %}
+
   {% if not session.username %}
   <p>
     <a href="/login">Kirjaudu sisään</a>

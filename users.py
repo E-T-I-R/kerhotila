@@ -1,4 +1,15 @@
 import db
+from werkzeug.security import generate_password_hash
+import sqlite3
+
+def create_user(username, password):
+    try:
+        password_hash = generate_password_hash(password)
+        sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
+        db.execute(sql, [username, password_hash])
+    except sqlite3.IntegrityError:
+        return False
+    return True
 
 def get_user(user_id):
     sql = """SELECT id, username, image IS NOT NULL has_image

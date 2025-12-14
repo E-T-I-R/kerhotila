@@ -1,6 +1,6 @@
 import sqlite3
-from flask import Flask, redirect, render_template, request, session, abort, make_response, g
-from werkzeug.security import check_password_hash, generate_password_hash
+from flask import Flask, redirect, render_template, request, session, abort, make_response, flash
+from werkzeug.security import check_password_hash
 import math
 import secrets
 import config
@@ -28,29 +28,30 @@ def index(page=1):
     all_reservations = reservations.get_reservations(page, page_size)
     return render_template("index.html", page=page, page_count=page_count, reservations=all_reservations)
 
-@app.route("/register")
+@app.route("/register", methods=["GET", "POST"])
 def register():
-    return render_template("register.html")
+    if request.method == "GET":
+        return render_template("register.html", filled={})
 
-@app.route("/create", methods=["POST"])
-def create():
-    username = request.form["username"]
-    password1 = request.form["password1"]
-    password2 = request.form["password2"]
-    if not username or not password1 or not password2 or len(username) > 20 or len(password1) > 100 or len(password2) > 100:
-        abort(403)
+    if request.method == "POST":
+        username = request.form["username"]
+        password1 = request.form["password1"]
+        password2 = request.form["password2"]
+        if not username or not password1 or not password2 or len(username) > 20 or len(password1) > 100 or len(password2) > 100:
+            abort(403)
 
-    if password1 != password2:
-        return "VIRHE: salasanat eivät ole samat"
-    password_hash = generate_password_hash(password1)
+        if password1 != password2:
+            flash("VIRHE: Antamasi salasanat eivät ole samat")
+            filled = {"username": username}
+            return render_template("register.html", filled=filled)
 
-    try:
-        sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
-        db.execute(sql, [username, password_hash])
-    except sqlite3.IntegrityError:
-        return "<p>VIRHE: tunnus on jo varattu</p> <p><a href=""/"">Takaisin</a></p>"
-
-    return "<p>Tunnus luotu</p> <p><a href=""/"">Takaisin</a></p>"
+        if users.create_user(username, password1):
+            flash("Tunnuksen luominen onnistui, voit nyt kirjautua sisään")
+            return redirect("/")
+        else:
+            flash("VIRHE: Valitsemasi tunnus on jo varattu")
+            filled = {"username": username}
+            return render_template("register.html", filled=filled)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -74,7 +75,8 @@ def login():
             session["username"] = username
             return redirect("/")
         else:
-            return "VIRHE: väärä tunnus tai salasana"
+            flash("VIRHE: Väärä tunnus tai salasana")
+            return redirect("/login")
 
 @app.route("/logout")
 def logout():
@@ -228,14 +230,17 @@ def add_image():
 
         file = request.files["image"]
         if not file.filename.endswith(".jpg"):
-            return "VIRHE: väärä tidostomuoto"
+            flash("VIRHE: Lähettämäsi tiedosto ei ole jpg-tiedosto")
+            return redirect("/add_image")
 
         image = file.read()
         if len(image) > 100 * 1024:
-            return "VIRHE: liian suuri kuva"
+            flash("VIRHE: Lähettämäsi kuva on liian suuri")
+            return redirect("/add_image")
 
         user_id = session["user_id"]
         users.update_image(user_id, image)
+        flash("Kuvan lisääminen onnistui")
         return redirect("/user/" + str(user_id))
 
 @app.route("/image/<int:user_id>")
