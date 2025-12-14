@@ -195,8 +195,6 @@ def remove_reservation(reservation_id):
         check_csrf()
 
         if "continue" in request.form:
-            reservations.remove_registrations(reservation_id)
-            reservations.remove_classes(reservation_id)
             reservations.remove_reservation(reservation_id)
             return redirect("/")
 

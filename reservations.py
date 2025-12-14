@@ -63,11 +63,10 @@ def update_reservation(reservation_id, title, time, description, classes):
         db.execute(sql, [reservation_id, title, value])
 
 def remove_reservation(reservation_id):
-    sql = "DELETE FROM reservations WHERE id = ?"
-    db.execute(sql, [reservation_id])
-
-def remove_registrations(reservation_id):
     sql = "DELETE FROM registrations WHERE reservation_id = ?"
+    db.execute(sql, [reservation_id])
+    remove_classes(reservation_id)
+    sql = "DELETE FROM reservations WHERE id = ?"
     db.execute(sql, [reservation_id])
 
 def remove_classes(reservation_id):
