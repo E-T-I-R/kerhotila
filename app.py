@@ -109,11 +109,17 @@ def create_reservation():
     if not title or len(title) > 50 or len(description) > 5000:
         abort(403)
 
+    all_classes = reservations.get_all_classes()
+
     classes = []
     for entry in request.form.getlist("classes"):
         if entry:
-            parts = entry.split(":")
-            classes.append((parts[0], parts[1]))
+            class_title, class_value = entry.split(":")
+            if class_title not in all_classes:
+                abort(403)
+            if class_value not in all_classes[class_title]:
+                abort(403)
+            classes.append((class_title, class_value))
 
     reservation_id = reservations.add_reservation(title, time, description, user_id, classes)
 
@@ -161,8 +167,12 @@ def edit_reservation(reservation_id):
         classes = []
         for entry in request.form.getlist("classes"):
             if entry:
-                parts = entry.split(":")
-                classes.append((parts[0], parts[1]))
+                class_title, class_value = entry.split(":")
+                if class_title not in all_classes:
+                    abort(403)
+                if class_value not in all_classes[class_title]:
+                    abort(403)
+                classes.append((class_title, class_value))
 
         reservations.update_reservation(reservation_id, title, time, description, classes)
 
